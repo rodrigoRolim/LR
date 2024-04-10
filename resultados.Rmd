@@ -12,21 +12,32 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-#### 1. Carregue a base de dados Satellite
+#### 1.1 Carregue a base de dados Satellite
 
 ```{r}
-# instalar o pacote mlbench
+# instalar o pacotes necessários
 install.packages("mlbench", repos = "http://cran.us.r-project.org")
+
+install.packages("e1017")
+install.packages("randomForest")
+install.packages("kernlab")
+install.packages("caret")
 ```
 
 ```{r}
-# usar o pacote mlbench
+# usar os pacotes necessários
 library(mlbench)
+library(caret)
 ```
 
 ```{r}
 # carregar os dados Satellite
 data(Satellite)
+```
+
+```{r}
+# exibir estrutura dos dados Satellite
+str(Satellite)
 ```
 
 ```{r}
@@ -39,4 +50,59 @@ summary(Satellite)
 head(Satellite, n = 6)
 ```
 
-#### 2. Crie par2ções contendo 80% para treino e 20% para teste
+
+#### 1.2 Crie partições contendo 80% para treino e 20% para teste
+
+```{r}
+# particionar em 80% para treino e 20% para teste
+set.seed(7)
+indices <- createDataPartition(Satellite$classes, p=0.8, list=F)
+treino <- Satellite[indices, ]
+teste <- Satellite[-indices, ]
+```
+
+#### 1.3 Treine modelos RandomForest, SVM e RNA para predição destes dados.
+```{r}
+# treinar modelos RandomForest, SVM e RNA
+rf <- train(classes ~ ., data=treino, method="rf")
+svm <- train(classes ~ ., data=treino, method="svmRadial")
+rna <- train(classes ~ ., data=treino, method="nnet", trace=F)
+```
+
+#### 1.4 Escolha o melhor modelo com base em suas matrizes de confusão.
+
+```{r}
+# predições
+predict.rf <- predict(rf, teste)
+predict.svm <- predict(svm, teste)
+predict.rna <- predict(rna, teste)
+```
+
+```{r}
+# matrizes de confusões de cada uma das predições
+
+# matriz de confusão para o modelo RF
+conf_matrix.rf <- confusionMatrix(predict.rf, teste$classes)
+
+print(conf_matrix.rf)
+cat('\n')
+
+#matriz de confusão para o modelo SVM
+conf_matrix.svm <- confusionMatrix(predict.svm, teste$classes)
+
+print(conf_matrix.svm)
+cat('\n')
+
+# matriz de confusão para o modelo RNA
+conf_matrix.rna <- confusionMatrix(predict.rna, teste$classes)
+
+print(conf_matrix.rna)
+cat('\n')
+```
+
+#### 1.5 Indique qual modelo dá o melhor o resultado e a métrica utilizada
+
+'''
+O melhor modelo foi random forest com acurácia de 0.9218, precisão de 0.8980 e recall de 0.9070; seguido pelo SVM  com acurácia de 0.9112, precisão de 0.8993 e recall de 0.8904. Sendo ambos praticamente empatados. A métrica utilizada foram as precisão e recall
+'''
+
