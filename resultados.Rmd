@@ -1,0 +1,42 @@
+---
+título: "resultados"
+authors: "rodrigo rolim veras"
+date: "2024-04-09"
+output: pdf_document
+---
+
+------------------------------------------------------------------------
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#### 1. Carregue a base de dados Satellite
+
+```{r}
+# instalar o pacote mlbench
+install.packages("mlbench", repos = "http://cran.us.r-project.org")
+```
+
+```{r}
+# usar o pacote mlbench
+library(mlbench)
+```
+
+```{r}
+# carregar os dados Satellite
+data(Satellite)
+```
+
+```{r}
+# apresentar alguma medidas estatísticas do dados Satellite
+summary(Satellite)
+```
+
+```{r}
+# exibir alguns dados do Satellite
+head(Satellite, n = 6)
+```
+
+#### 2. Crie par2ções contendo 80% para treino e 20% para teste
