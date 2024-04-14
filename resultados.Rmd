@@ -113,36 +113,41 @@ dados <- read.csv("http://www.razer.net.br/datasets/Volumes.csv", sep=";", dec="
 head(dados)
 ```
 
-#### 2.2
+#### 2.2 Eliminar a coluna NR, que só apresenta um número sequencial
 
 ```{r}
 dados$NR <- NULL
 ```
 
-#### 2.3
+#### 2.3 Criar partição de dados: treinamento 80%, teste 20%
 ```{r}
 regression.indices <- caret::createDataPartition(dados$VOL, p=0.8, list=F)
 regression.treino <- dados[regression.indices, ]
 regression.teste <- dados[-regression.indices, ]
 ```
 
-#### 2.4
+#### 2.4 Usando o pacote "caret", treinar os modelos: Random Forest (rf), SVM (svmRadial), Redes Neurais (neuralnet) e o modelo alométrico de SPURR
 
 ```{r}
 regression.rf <- caret::train(VOL ~ ., data=regression.treino, method="rf")
 regression.svm <- caret::train(VOL ~ ., data=regression.treino, method="svmRadial")
 regression.rna <- caret::train(VOL ~ ., data=regression.treino, method="nnet", trace=F)
 ``` 
-
+##### o modelo de Spurr
 ```{r}
 set.seed(7)
-alom.indices <- createDataPartition(dados$VOL, p=0.8, list=F)
-alom.treino <- dados[alom.indices,]
-alom.teste <- dados[-alom.indices,]
+regression.spurr.indices <- caret::createDataPartition(dados$VOL, p=0.8, list=F)
+regression.spurr.treino <- dados[regression.spurr.indices,]
+regression.spurr.teste <- dados[-regression.spurr.indices,]
 ```
 
+##### treino do modelo Spurr
 ```{r}
-alom <- nls(VOL ~ b0 + b1*DAP*DAP*HT, data=alom.treino, start=list(b0=0.5, b1=0.5))
+regression.spurr <- nls(VOL ~ b0 + b1*DAP*DAP*HT, data=regression.spurr.treino, start=list(b0=0.5, b1=0.5))
+```
+##### visualizar os resultado
+```{r}
+summary(regression.spurr)
 ```
 
 #### 2.5 Efetue as predições nos dados de teste
@@ -151,6 +156,7 @@ predições
 predict.regression.rf <- predict(regression.rf, regression.teste)
 predict.regression.svm <- predict(regression.svm, regression.teste)
 predict.regression.rna <- predict(regression.rna, regression.teste)
+predict.regression.suprr <- predict(regression.spurr, regression.teste)
 ```
 
 #### 2.6 Crie suas próprias funções (UDF) e calcule as seguintes métricas entre a predição e os dados observados
@@ -189,4 +195,53 @@ Syx(regression.teste$VOL, predict.regression.rf, n)
 ```{r}
 n <- nrow(regression.teste)
 SyxPercent(regression.teste$VOL, predict.regression.rf, n)
+```
+##### métrica de estimativas para o modelo SVM - Regressão
+
+- coeficiente de determinação
+```{r}
+R2(regression.teste$VOL, predict.regression.svm)
+```
+- Erro padrão estimativa
+```{r}
+n <- nrow(regression.teste)
+Syx(regression.teste$VOL, predict.regression.svm, n)
+```
+- Erro padrão estimativa em porcentagem
+```{r}
+n <- nrow(regression.teste)
+SyxPercent(regression.teste$VOL, predict.regression.svm, n)
+```
+##### métricas de estimativas para o modelo nnet - Regressão
+
+- coeficiente de determinação
+```{r}
+R2(regression.teste$VOL, predict.regression.rna)
+```
+- Erro padrão estimativa
+```{r}
+n <- nrow(regression.teste)
+Syx(regression.teste$VOL, predict.regression.rna, n)
+```
+- Erro padrão estimativa em porcentagem
+```{r}
+n <- nrow(regression.teste)
+SyxPercent(regression.teste$VOL, predict.regression.rna, n)
+```
+
+##### métricas de estimativas para o modelo Spurr
+
+- coeficiente de determinação
+```{r}
+R2(regression.teste$VOL, predict.regression.suprr)
+```
+- Erro padrão estimativa
+```{r}
+n <- nrow(regression.teste)
+Syx(regression.teste$VOL, predict.regression.suprr, n)
+```
+- Erro padrão estimativa em porcentagem
+```{r}
+n <- nrow(regression.teste)
+SyxPercent(regression.teste$VOL, predict.regression.suprr, n)
 ```
