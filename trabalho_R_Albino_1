@@ -45,14 +45,10 @@ predicoes.rna <- predict(rna, teste)
 
 ## 4. Escolha o melhor modelo com base em suas matrizes de confusão.
 ### Previsões dos modelos nos dados de teste
-predictions_rf <- predict(rf,teste)
-predictions_svm <- predict(svm,teste)
-predictions_rna <- predict(rna,teste)
-
 # Avaliar e mostrar as matrizes de confusão
-confusion_rf <- confusionMatrix(predictions_rf, teste$classes)
-confusion_svm <- confusionMatrix(predictions_svm, teste$classes)
-confusion_rna <- confusionMatrix(predictions_rna, teste$classes)
+confusion_rf <- confusionMatrix(predicoes.rf, teste$classes)
+confusion_svm <- confusionMatrix(predicoes.svm, teste$classes)
+confusion_rna <- confusionMatrix(predicoes.rna, teste$classes)
 confusion_rf 
 confusion_svm 
 confusion_rna  
