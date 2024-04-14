@@ -78,7 +78,7 @@ print(paste("O KAPPA DO MODELO RNA É: ",confusion_rna$overall["Kappa"]))
 
 ## 5. Indique qual modelo dá o melhor o resultado e a métrica utilizada
 # Conforme valores de acurácia e kappa dos modelos analisados, o que apresentou o melhor resultado foi o 
-# RandomForest, com acurácia de 0.9213 e kappa de 0.9024 para semente (7)
+# RandomForest, com acurácia de 0.9213 e kappa de 0.9024 para semente (7) e versão do R: "R version 4.3.3 (2024-02-29 ucrt)"
 
 #$$$$$$$$$$$$$$$$$$$$$$$
 #$     Parei aqui      $
