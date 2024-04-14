@@ -1,0 +1,114 @@
+###instalando os pacotes necessários
+#install.packages("mlbench")
+#install.packages("e1017")
+#install.packages("randomForest")
+#install.packages("kernlab")
+#install.packages("caret")
+
+### Carregando o pacote mlbench e caret
+library(mlbench)  
+library(caret)
+
+# 1 Pesquisa com Dados de Satélite (Satellite)
+# Tarefas:
+## 1. Carregue a base de dados Satellite
+data(Satellite)
+df <- Satellite
+df
+
+### detalhando a base de dados
+summary(Satellite)
+str(Satellite)
+
+## 2. Crie par2ções contendo 80% para treino e 20% para teste
+### Definindo a semente aleatória para reproducibilidade
+set.seed(7)
+
+### Criando índices aleatórios para divisão de treino/teste (80% treino, 20% teste)
+indices <- createDataPartition(df$classes, p=0.80, list=FALSE)
+treino <- df[indices, ]
+teste <- df[-indices, ]
+
+## 3. Treine modelos RandomForest, SVM e RNA para predição destes dados.
+### Treinando o modelo RandomForest
+rf <- caret::train(classes ~ ., data=treino, method="rf")
+predicoes.rf <- predict(rf, teste)
+
+### Treinando o modelo SVM (SVM linear neste exemplo)
+svm <- caret::train(classes ~ ., data=treino, method="svmRadial")
+predicoes.svm <- predict(svm, teste)
+predicoes.svm
+
+### Treinando o modelo RNA (rede neural artificial)
+rna <- caret::train(classes ~ ., data=treino, method="nnet")
+predicoes.rna <- predict(rna, teste)
+
+## 4. Escolha o melhor modelo com base em suas matrizes de confusão.
+### Previsões dos modelos nos dados de teste
+# Avaliar e mostrar as matrizes de confusão
+confusion_rf <- confusionMatrix(predicoes.rf, teste$classes)
+confusion_svm <- confusionMatrix(predicoes.svm, teste$classes)
+confusion_rna <- confusionMatrix(predicoes.rna, teste$classes)
+confusion_rf 
+confusion_svm 
+confusion_rna  
+
+# exibir a acurácia e kappa de cada modelo
+print(paste("A ACURACIA DO MODELO RF: ",confusion_rf$overall["Accuracy"]))
+print(paste("O KAPPA DO MODELO RF É: ",confusion_rf$overall["Kappa"]))
+print(paste("A ACURACIA DO MODELO SVM É: ",confusion_svm$overall["Accuracy"]))
+print(paste("O KAPPA DO MODELO SVM É: ",confusion_svm$overall["Kappa"]))
+print(paste("A ACURACIA DO MODELO RNA É: ",confusion_rna$overall["Accuracy"]))
+print(paste("O KAPPA DO MODELO RNA É: ",confusion_rna$overall["Kappa"]))
+
+#[1] "A ACURACIA DO MODELO RF:  0.922118380062305"
+#[1] "O KAPPA DO MODELO RF É:  0.903412240918757"
+#[1] "A ACURACIA DO MODELO SVM É:  0.911214953271028"
+#[1] "O KAPPA DO MODELO SVM É:  0.89010398288224"
+#[1] "A ACURACIA DO MODELO RNA É:  0.580218068535826"
+#[1] "O RECALL DO MODELO RNA É:  0.46922861003784"
+# conforme mandei um e-mail para a tutoria pois em um exercício que fiz igual o do professor, os valores apresentaram
+# diferença, e o professor respondeu que depende da versão do R, podem ter feito modificações.
+# No contexto de modelos de classificação, um valor de Kappa mais próximo de 1 é desejável, indicando um bom 
+# ajuste do modelo aos dados e uma concordância significativa além do que seria esperado aleatoriamente.
+
+## 5. Indique qual modelo dá o melhor o resultado e a métrica utilizada
+# Conforme valores de acurácia e kappa dos modelos analisados, o que apresentou o melhor resultado foi o 
+# RandomForest, com acurácia de 0.9221 e kappa de 0.9034 para semente (7) e versão do R: "R version 4.3.3 (2024-02-29 ucrt)"
+
+#$$$$$$$$$$$$$$$$$$$$$$$
+#$     Parei aqui      $
+#$$$$$$$$$$$$$$$$$$$$$$$
+
+# 2 Estimativa de Volumes de Árvores
+# Tarefas
+## 1. Carregar o arquivo Volumes.csv (http://www.razer.net.br/datasets/Volumes.csv)
+
+
+## 2. Eliminar a coluna NR, que só apresenta um número sequencial
+
+
+## 3. Criar partição de dados: treinamento 80%, teste 20%
+
+
+## 4. Usando o pacote "caret", treinar os modelos: Random Forest (rf), SVM (svmRadial), Redes
+## Neurais (neuralnet) e o modelo alométrico de SPURR
+## * O modelo alométrico é dado por: Volume = b0 + b1 * dap2 * Ht
+## alom <- nls(VOL ~ b0 + b1*DAP*DAP*HT, dados, start=list(b0=0.5, b1=0.5))
+
+
+## 5. Efetue as predições nos dados de teste
+
+
+## 6. Crie suas próprias funções (UDF) e calcule as seguintes métricas entre a predição e os dados
+## observados
+## * Coeficiente de determinação: R2
+
+
+## Erro padrão da estimativa: Syx
+
+
+## Syx%
+
+
+## 7. Escolha o melhor modelo.
