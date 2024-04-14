@@ -49,9 +49,9 @@ predicoes.rna <- predict(rna, teste)
 confusion_rf <- confusionMatrix(predicoes.rf, teste$classes)
 confusion_svm <- confusionMatrix(predicoes.svm, teste$classes)
 confusion_rna <- confusionMatrix(predicoes.rna, teste$classes)
-confusion.rf 
-confusion.svm 
-confusion.rna  
+confusion_rf 
+confusion_svm 
+confusion_rna  
 
 # exibir a acurácia e kappa de cada modelo
 print(paste("A ACURACIA DO MODELO RF: ",confusion_rf$overall["Accuracy"]))
@@ -61,8 +61,8 @@ print(paste("O KAPPA DO MODELO SVM É: ",confusion_svm$overall["Kappa"]))
 print(paste("A ACURACIA DO MODELO RNA É: ",confusion_rna$overall["Accuracy"]))
 print(paste("O KAPPA DO MODELO RNA É: ",confusion_rna$overall["Kappa"]))
 
-#[1] "A ACURACIA DO MODELO RF:  0.921339563862928"
-#[1] "O KAPPA DO MODELO RF É:  0.902459277176942"
+#[1] "A ACURACIA DO MODELO RF:  0.922118380062305"
+#[1] "O KAPPA DO MODELO RF É:  0.903412240918757"
 #[1] "A ACURACIA DO MODELO SVM É:  0.911214953271028"
 #[1] "O KAPPA DO MODELO SVM É:  0.89010398288224"
 #[1] "A ACURACIA DO MODELO RNA É:  0.580218068535826"
@@ -74,7 +74,7 @@ print(paste("O KAPPA DO MODELO RNA É: ",confusion_rna$overall["Kappa"]))
 
 ## 5. Indique qual modelo dá o melhor o resultado e a métrica utilizada
 # Conforme valores de acurácia e kappa dos modelos analisados, o que apresentou o melhor resultado foi o 
-# RandomForest, com acurácia de 0.9213 e kappa de 0.9024 para semente (7) e versão do R: "R version 4.3.3 (2024-02-29 ucrt)"
+# RandomForest, com acurácia de 0.9221 e kappa de 0.9034 para semente (7) e versão do R: "R version 4.3.3 (2024-02-29 ucrt)"
 
 #$$$$$$$$$$$$$$$$$$$$$$$
 #$     Parei aqui      $
