@@ -49,9 +49,9 @@ predicoes.rna <- predict(rna, teste)
 confusion_rf <- confusionMatrix(predicoes.rf, teste$classes)
 confusion_svm <- confusionMatrix(predicoes.svm, teste$classes)
 confusion_rna <- confusionMatrix(predicoes.rna, teste$classes)
-confusion_rf 
-confusion_svm 
-confusion_rna  
+confusion.rf 
+confusion.svm 
+confusion.rna  
 
 # exibir a acurácia e kappa de cada modelo
 print(paste("A ACURACIA DO MODELO RF: ",confusion_rf$overall["Accuracy"]))
