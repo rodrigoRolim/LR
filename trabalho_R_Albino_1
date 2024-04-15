@@ -120,7 +120,7 @@ rna <- caret::train(VOL ~ ., data=treino, method="nnet")
 ##* O modelo alométrico é dado por: Volume = b0 + b1 dap2*Ht
 alom <- nls(VOL ~ b0 + b1*DAP*DAP*HT, dados, start=list(b0=0.5, b1=0.5))
 
-## 4. Escolha o melhor modelo com base em suas matrizes de confusão.
+## exemplo utilizando o RMSE para análise de dados
 # Previsões dos modelos nos dados de teste
 #dados.rmse.rf <- RMSE (dados.predicoes.rf, teste$VOL)
 #dados.rmse.svm <- RMSE (dados.predicoes.svm, teste$VOL)
