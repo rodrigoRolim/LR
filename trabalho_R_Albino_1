@@ -153,7 +153,7 @@ calcule_Syx <- function (teste, predicoes,n){
 ## função para calcular o Syx%
 calcule_SyxPerc <- function (resultado_syx,teste){
   SYX_perc <- (resultado_syx/mean(teste)) * 100
-  return (SYX_perc)
+  return(SYX_perc)
 }
 ## Coeficiente de determinação: R2
 R2.rf <- calcule_R2 (teste$VOL, dados.predicoes.rf)
@@ -193,4 +193,23 @@ cat("SYX% DE SVM: ", SYX.perc.svm, "\n")
 cat("SYX% DE RNA: ", SYX.perc.rna, "\n")
 cat("SYX% DE ALOM: ", SYX.perc.alom, "\n")
 
+#Resultados (para semente (7)) e dados do modelo alométrico (treino) e considerando n (de teste)
+#R2 ((QUANTO MAIS PERTO DE 1, MELHOR O MODELO))
+#R2 DE RF:  0.8535647  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+#R2 DE SVM:  0.8484652 
+#R2 DE RNA:  -0.7244946  
+#R2 DE ALOM:  0.8263134 
+#SYX ((ERRO - QUANTO MAIS PERTO DE 0, MELHOR O MODELO))
+#SYX DE RF:  0.1445527  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+#SYX DE SVM:  0.1470481 
+#SYX DE RNA:  0.49606 
+#SYX DE ALOM:  0.1574296 
+#SYX% ((% DE ERRO - QUANTO MAIS PERTO DE 0, MELHOR O MODELO))
+#SYX% DE RF:  11.07658  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+#SYX% DE SVM:  11.2678 
+#SYX% DE RNA:  38.01139 
+#SYX% DE ALOM:  12.0633
+
+
 ## 7. Escolha o melhor modelo.
+# Conforme os valores apresentadas dos 4 modelos, o modelo RANDOM FOREST foi o que apresentou o melhor resultado para R2,Syx e Syx%
