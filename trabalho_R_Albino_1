@@ -118,7 +118,7 @@ rna <- caret::train(VOL ~ ., data=treino, method="nnet")
 
 ### Treinando o modelo alométrico de SPURR 
 ##* O modelo alométrico é dado por: Volume = b0 + b1 dap2*Ht
-alom <- nls(VOL ~ b0 + b1*DAP*DAP*HT, dados, start=list(b0=0.5, b1=0.5))
+alom <- nls(VOL ~ b0 + b1*DAP*DAP*HT, data=treino, start=list(b0=0.5, b1=0.5))
 
 ## exemplo utilizando o RMSE para análise de dados
 # Previsões dos modelos nos dados de teste
@@ -164,8 +164,8 @@ R2.alom <- calcule_R2 (teste$VOL, dados.predicoes.alom)
 ## Erro padrão da estimativa: Syx
 n <- nrow(teste)
 SYX.rf <- calcule_Syx(teste$VOL,dados.predicoes.rf, n)
-SYX.svm <- calcule_Syx(teste$Vol, dados.predicoes.svm, n)
-SYX.rna <- calcule_Syx(teste$Vol, dados.predicoes.rna, n) 
+SYX.svm <- calcule_Syx(teste$VOL, dados.predicoes.svm, n)
+SYX.rna <- calcule_Syx(teste$VOL, dados.predicoes.rna, n) 
 SYX.alom <- calcule_Syx(teste$VOL, dados.predicoes.alom, n)
 
 ## Erro padrão da estimativa: Syx%
