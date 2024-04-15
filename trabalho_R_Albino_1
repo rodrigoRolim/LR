@@ -20,7 +20,7 @@ df
 summary(Satellite)
 str(Satellite)
 
-## 2. Crie par2ções contendo 80% para treino e 20% para teste
+## 2. Crie partições contendo 80% para treino e 20% para teste
 ### Definindo a semente aleatória para reproducibilidade
 set.seed(7)
 
