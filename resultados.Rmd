@@ -7,7 +7,6 @@ output: pdf_document
 
 ------------------------------------------------------------------------
 
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
@@ -18,10 +17,10 @@ knitr::opts_chunk$set(echo = TRUE)
 # instalar o pacotes necessários
 install.packages("mlbench", repos = "http://cran.us.r-project.org")
 
-install.packages("e1017")
-install.packages("randomForest")
-install.packages("kernlab")
-install.packages("caret")
+install.packages("e1017", repos = "http://cran.us.r-project.org")
+install.packages("randomForest", repos = "http://cran.us.r-project.org")
+install.packages("kernlab", repos = "http://cran.us.r-project.org")
+install.packages("caret", repos = "http://cran.us.r-project.org")
 ```
 
 ```{r}
@@ -50,18 +49,21 @@ summary(Satellite)
 head(Satellite, n = 6)
 ```
 
-
 #### 1.2 Crie partições contendo 80% para treino e 20% para teste
+```{r}
+# Para reproductibilidade
+set.seed(7)
+```
 
 ```{r}
 # particionar em 80% para treino e 20% para teste
-set.seed(7)
 indices <- createDataPartition(Satellite$classes, p=0.8, list=F)
 treino <- Satellite[indices, ]
 teste <- Satellite[-indices, ]
 ```
 
 #### 1.3 Treine modelos RandomForest, SVM e RNA para predição destes dados.
+
 ```{r}
 # treinar modelos RandomForest, SVM e RNA
 rf <- train(classes ~ ., data=treino, method="rf")
@@ -102,11 +104,9 @@ cat('\n')
 
 #### 1.5 Indique qual modelo dá o melhor o resultado e a métrica utilizada
 
-'''
-O melhor modelo foi random forest com acurácia de 0.9218, precisão de 0.8980 e recall de 0.9070; seguido pelo SVM  com acurácia de 0.9112, precisão de 0.8993 e recall de 0.8904. Sendo ambos praticamente empatados. A métrica utilizada foram as precisão e recall
-'''
+O melhor modelo foi random forest com acurácia de 0.9218 e kappa de 0.8987. A métrica utilizada foram a acurácia e kappa.
 
-#### 2.1 Carregar o arquivo Volumes.csv (http://www.razer.net.br/datasets/Volumes.csv)
+#### 2.1 Carregar o arquivo Volumes.csv (<http://www.razer.net.br/datasets/Volumes.csv>)
 
 ```{r}
 dados <- read.csv("http://www.razer.net.br/datasets/Volumes.csv", sep=";", dec=",")
@@ -120,6 +120,7 @@ dados$NR <- NULL
 ```
 
 #### 2.3 Criar partição de dados: treinamento 80%, teste 20%
+
 ```{r}
 regression.indices <- caret::createDataPartition(dados$VOL, p=0.8, list=F)
 regression.treino <- dados[regression.indices, ]
@@ -131,27 +132,30 @@ regression.teste <- dados[-regression.indices, ]
 ```{r}
 regression.rf <- caret::train(VOL ~ ., data=regression.treino, method="rf")
 regression.svm <- caret::train(VOL ~ ., data=regression.treino, method="svmRadial")
-regression.rna <- caret::train(VOL ~ ., data=regression.treino, method="nnet", trace=F)
-``` 
-##### o modelo de Spurr
-```{r}
-set.seed(7)
-regression.spurr.indices <- caret::createDataPartition(dados$VOL, p=0.8, list=F)
-regression.spurr.treino <- dados[regression.spurr.indices,]
-regression.spurr.teste <- dados[-regression.spurr.indices,]
+regression.rna <- caret::train(
+  VOL ~ ., data=regression.treino, 
+  method="nnet", 
+  trControl=trainControl(method = "LOOCV"), 
+  trace=F
+)
 ```
 
 ##### treino do modelo Spurr
+
 ```{r}
-regression.spurr <- nls(VOL ~ b0 + b1*DAP*DAP*HT, data=regression.spurr.treino, start=list(b0=0.5, b1=0.5))
+regression.spurr <- nls(VOL ~ b0 + b1*DAP*DAP*HT, data=regression.treino, start=list(b0=0.5, b1=0.5))
 ```
-##### visualizar os resultado
+
+##### visualizar os resultados de Spurr
+
 ```{r}
 summary(regression.spurr)
 ```
 
 #### 2.5 Efetue as predições nos dados de teste
+
 predições
+
 ```{r}
 predict.regression.rf <- predict(regression.rf, regression.teste)
 predict.regression.svm <- predict(regression.svm, regression.teste)
@@ -160,70 +164,95 @@ predict.regression.suprr <- predict(regression.spurr, regression.teste)
 ```
 
 #### 2.6 Crie suas próprias funções (UDF) e calcule as seguintes métricas entre a predição e os dados observados
-- Erro padrão de estimativa: Syx
+
+-   Erro padrão de estimativa: Syx
+
 ```{r}
 Syx <- function(reals, predicteds, n) {
   return (sqrt(sum((reals - predicteds)^2)/(n - 2)))
 }
 ```
-- Erro padrão de estimativa em porcentagem: Syx%
+
+-   Erro padrão de estimativa em porcentagem: Syx%
+
 ```{r}
 SyxPercent <- function(reals, predicteds, n) {
   return ((Syx(reals, predicteds, n)/mean(reals))*100)
 }
 ```
-- Coeficientededeterminação:R2
+
+-   Coeficientededeterminação:R2
+
 ```{r}
 R2 <- function (reals, predicteds) {
-  return (sqrt(1 - sum((reals - predicteds)^2)/sum((reals - mean(reals))^2)))
+  return (1 - sum((reals - predicteds)^2)/sum((reals - mean(reals))^2))
 }
 
 ```
 
 #### 2.7 Escolha o melhor modelo.
+
 ##### métrica de estimativas para o modelo RandomForest - Regressão
-- coeficiente de determinação
+
+-   coeficiente de determinação
+
 ```{r}
 R2(regression.teste$VOL, predict.regression.rf)
 ```
-- Erro padrão estimativa
+
+-   Erro padrão estimativa
+
 ```{r}
 n <- nrow(regression.teste)
 Syx(regression.teste$VOL, predict.regression.rf, n)
 ```
-- Erro padrão estimativa em porcentagem
+
+-   Erro padrão estimativa em porcentagem
+
 ```{r}
 n <- nrow(regression.teste)
 SyxPercent(regression.teste$VOL, predict.regression.rf, n)
 ```
+
 ##### métrica de estimativas para o modelo SVM - Regressão
 
-- coeficiente de determinação
+-   coeficiente de determinação
+
 ```{r}
 R2(regression.teste$VOL, predict.regression.svm)
 ```
-- Erro padrão estimativa
+
+-   Erro padrão estimativa
+
 ```{r}
 n <- nrow(regression.teste)
 Syx(regression.teste$VOL, predict.regression.svm, n)
 ```
-- Erro padrão estimativa em porcentagem
+
+-   Erro padrão estimativa em porcentagem
+
 ```{r}
 n <- nrow(regression.teste)
 SyxPercent(regression.teste$VOL, predict.regression.svm, n)
 ```
+
 ##### métricas de estimativas para o modelo nnet - Regressão
 
-- coeficiente de determinação
+-   coeficiente de determinação
+
 ```{r}
 R2(regression.teste$VOL, predict.regression.rna)
 ```
-- Erro padrão estimativa
+
+-   Erro padrão estimativa
+
 ```{r}
 n <- nrow(regression.teste)
 Syx(regression.teste$VOL, predict.regression.rna, n)
 ```
-- Erro padrão estimativa em porcentagem
+
+-   Erro padrão estimativa em porcentagem
+
 ```{r}
 n <- nrow(regression.teste)
 SyxPercent(regression.teste$VOL, predict.regression.rna, n)
@@ -231,17 +260,50 @@ SyxPercent(regression.teste$VOL, predict.regression.rna, n)
 
 ##### métricas de estimativas para o modelo Spurr
 
-- coeficiente de determinação
+-   coeficiente de determinação
+
 ```{r}
 R2(regression.teste$VOL, predict.regression.suprr)
 ```
-- Erro padrão estimativa
+
+-   Erro padrão estimativa
+
 ```{r}
 n <- nrow(regression.teste)
 Syx(regression.teste$VOL, predict.regression.suprr, n)
 ```
-- Erro padrão estimativa em porcentagem
+
+-   Erro padrão estimativa em porcentagem
+
 ```{r}
 n <- nrow(regression.teste)
 SyxPercent(regression.teste$VOL, predict.regression.suprr, n)
 ```
+
+##### Resumo dos resultados
+
+###### RF:
+
+1.  coeficiente de determinação: 0.8843635
+2.  Erro padrão estimativa: 0.1477194
+3.  Erro padrão estimativa em porcentagem: 10.99484
+
+###### SVM:
+
+1.  coeficiente de determinação: 0.7076839
+2.  Erro padrão estimativa: 0.2348641
+3.  Erro padrão estimativa em porcentagem: 17.48107
+
+###### nnet:
+
+1.  coeficiente de determinação: -0.6948902
+2.  Erro padrão estimativa: 0.5655371
+3.  Error padrão estimativa em porcentagem: 42.09325
+
+###### spurr:
+
+1.  coeficiente de determinação: 0.9141323
+2.  Erro padrão estimativa: 0.1272932
+3.  Error padrão estimativa em porcentagem: 9.474507
+
+Com base nas métricas, o modelo que se saiu melhor foi o spurr
