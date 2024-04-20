@@ -20,7 +20,7 @@ df
 summary(Satellite)
 str(Satellite)
 
-## 2. Crie par2ções contendo 80% para treino e 20% para teste
+## 2. Crie partições contendo 80% para treino e 20% para teste
 ### Definindo a semente aleatória para reproducibilidade
 set.seed(7)
 
@@ -76,19 +76,30 @@ print(paste("O KAPPA DO MODELO RNA É: ",confusion_rna$overall["Kappa"]))
 # Conforme valores de acurácia e kappa dos modelos analisados, o que apresentou o melhor resultado foi o 
 # RandomForest, com acurácia de 0.9221 e kappa de 0.9034 para semente (7) e versão do R: "R version 4.3.3 (2024-02-29 ucrt)"
 
-#$$$$$$$$$$$$$$$$$$$$$$$
-#$     Parei aqui      $
-#$$$$$$$$$$$$$$$$$$$$$$$
+# *********************************************************************************************************************************************************************
 
 # 2 Estimativa de Volumes de Árvores
 # Tarefas
 ## 1. Carregar o arquivo Volumes.csv (http://www.razer.net.br/datasets/Volumes.csv)
-
+# Carregar o arquivo CSV diretamente da internet
+dados<- read.csv("http://www.razer.net.br/datasets/Volumes.csv", sep=";", dec=",")
+# Exibir os primeiros registros dos dados
+#head(dados)
+#str(dados)
 
 ## 2. Eliminar a coluna NR, que só apresenta um número sequencial
+dados$NR <- NULL
 
+### Definindo a semente aleatória para reproducibilidade
+set.seed(7)
 
 ## 3. Criar partição de dados: treinamento 80%, teste 20%
+indices <- NULL
+treino <- NULL
+teste <- NULL
+indices <- createDataPartition(dados$VOL, p=0.80, list=FALSE)
+treino <- dados[indices, ]
+teste <- dados[-indices, ]
 
 
 ## 4. Usando o pacote "caret", treinar os modelos: Random Forest (rf), SVM (svmRadial), Redes
@@ -96,19 +107,109 @@ print(paste("O KAPPA DO MODELO RNA É: ",confusion_rna$overall["Kappa"]))
 ## * O modelo alométrico é dado por: Volume = b0 + b1 * dap2 * Ht
 ## alom <- nls(VOL ~ b0 + b1*DAP*DAP*HT, dados, start=list(b0=0.5, b1=0.5))
 
+### Treinando o modelo RandomForest
+rf <- caret::train(VOL ~ ., data=treino, method="rf")
+
+### Treinando o modelo SVM (SVM linear neste exemplo)
+svm <- caret::train(VOL ~ ., data=treino, method="svmRadial")
+
+### Treinando o modelo RNA (rede neural artificial)
+rna <- caret::train(VOL ~ ., data=treino, method="nnet")
+
+### Treinando o modelo alométrico de SPURR 
+##* O modelo alométrico é dado por: Volume = b0 + b1 dap2*Ht
+alom <- nls(VOL ~ b0 + b1*DAP*DAP*HT, data=treino, start=list(b0=0.5, b1=0.5))
+
+## exemplo utilizando o RMSE para análise de dados
+# Previsões dos modelos nos dados de teste
+#dados.rmse.rf <- RMSE (dados.predicoes.rf, teste$VOL)
+#dados.rmse.svm <- RMSE (dados.predicoes.svm, teste$VOL)
+#dados.rmse.rna <- RMSE (dados.predicoes.rna, teste$VOL)
+#dados.rmse.alom <- RMSE (dados.predicoes.alom, teste$VOL)
+#cat("RMSE RF: ", dados.rmse.rf, "\n")
+#cat("RMSE SVM: ", dados.rmse.svm, "\n")
+#cat("RMSE RNA: ", dados.rmse.rna, "\n")
+#cat("RMSE ALOM: ", dados.rmse.alom, "\n")
 
 ## 5. Efetue as predições nos dados de teste
+dados.predicoes.rf <- predict(rf, teste)
+dados.predicoes.svm <- predict(svm, teste)
+dados.predicoes.rna <- predict(rna, teste)
+dados.predicoes.alom <- predict(alom, teste)
 
 
 ## 6. Crie suas próprias funções (UDF) e calcule as seguintes métricas entre a predição e os dados
 ## observados
-## * Coeficiente de determinação: R2
-
+## função para calcular o R2
+calcule_R2 <- function (teste, predicoes){
+  R2 <- 1 - (sum((teste - predicoes) ^ 2)) / (sum((teste - mean(teste)) ^ 2))
+  return(R2)
+}
+## função para calcular o Syx
+calcule_Syx <- function (teste, predicoes,n){
+  SYX <- (sqrt(sum((teste - predicoes) ^2) / (n-2)))
+  return(SYX)
+}
+## função para calcular o Syx%
+calcule_SyxPerc <- function (resultado_syx,teste){
+  SYX_perc <- (resultado_syx/mean(teste)) * 100
+  return(SYX_perc)
+}
+## Coeficiente de determinação: R2
+R2.rf <- calcule_R2 (teste$VOL, dados.predicoes.rf)
+R2.svm <- calcule_R2 (teste$VOL, dados.predicoes.svm)
+R2.rna <- calcule_R2 (teste$VOL, dados.predicoes.rna)
+R2.alom <- calcule_R2 (teste$VOL, dados.predicoes.alom)
 
 ## Erro padrão da estimativa: Syx
+n <- nrow(teste)
+SYX.rf <- calcule_Syx(teste$VOL,dados.predicoes.rf, n)
+SYX.svm <- calcule_Syx(teste$VOL, dados.predicoes.svm, n)
+SYX.rna <- calcule_Syx(teste$VOL, dados.predicoes.rna, n) 
+SYX.alom <- calcule_Syx(teste$VOL, dados.predicoes.alom, n)
 
+## Erro padrão da estimativa: Syx%
+SYX.perc.rf <- calcule_SyxPerc(SYX.rf, teste$VOL)
+SYX.perc.svm <- calcule_SyxPerc(SYX.svm, teste$VOL)
+SYX.perc.rna <- calcule_SyxPerc(SYX.rna, teste$VOL)
+SYX.perc.alom <- calcule_SyxPerc(SYX.alom, teste$VOL)
 
-## Syx%
+## Resultados dos modelos
+cat("R2","\n")
+cat("R2 DE RF: ", R2.rf, "\n")
+cat("R2 DE SVM: ", R2.svm, "\n")
+cat("R2 DE RNA: ", R2.rna, "\n")
+cat("R2 DE ALOM: ", R2.alom, "\n")
+
+cat("SYX","\n")
+cat("SYX DE RF: ", SYX.rf, "\n")
+cat("SYX DE SVM: ", SYX.svm, "\n")
+cat("SYX DE RNA: ", SYX.rna, "\n")
+cat("SYX DE ALOM: ", SYX.alom, "\n")
+
+cat("SYX%","\n")
+cat("SYX% DE RF: ", SYX.perc.rf, "\n")
+cat("SYX% DE SVM: ", SYX.perc.svm, "\n")
+cat("SYX% DE RNA: ", SYX.perc.rna, "\n")
+cat("SYX% DE ALOM: ", SYX.perc.alom, "\n")
+
+#Resultados (para semente (7)) e dados do modelo alométrico (treino) e considerando n (de teste)
+#R2 ((QUANTO MAIS PERTO DE 1, MELHOR O MODELO))
+#R2 DE RF:  0.8535647  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+#R2 DE SVM:  0.8484652 
+#R2 DE RNA:  -0.7244946  
+#R2 DE ALOM:  0.8263134 
+#SYX ((ERRO - QUANTO MAIS PERTO DE 0, MELHOR O MODELO))
+#SYX DE RF:  0.1445527  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+#SYX DE SVM:  0.1470481 
+#SYX DE RNA:  0.49606 
+#SYX DE ALOM:  0.1574296 
+#SYX% ((% DE ERRO - QUANTO MAIS PERTO DE 0, MELHOR O MODELO))
+#SYX% DE RF:  11.07658  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+#SYX% DE SVM:  11.2678 
+#SYX% DE RNA:  38.01139 
+#SYX% DE ALOM:  12.0633
 
 
 ## 7. Escolha o melhor modelo.
+# Conforme os valores apresentadas dos 4 modelos, o modelo RANDOM FOREST foi o que apresentou o melhor resultado para R2,Syx e Syx%
