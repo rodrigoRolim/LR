@@ -1,0 +1,9 @@
+1.5 Indique qual modelo dá o melhor o resultado e a métrica utilizada
+  O melhor modelo foi random forest com acurácia de 0.918 e kappa de 0.8987. 
+  A métrica utilizada foram a acurácia e kappa.
+
+2.7 escolha o melhor modelo
+
+Com base nas métricas, o modelo que se saiu melhor foi o RandomForest, com
+R2 igual 0.8223603, Erro padrão estimativa de 0.1376052 e Erro padrão de estima-
+tiva em porcentagem de 10.42195

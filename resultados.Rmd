@@ -89,7 +89,7 @@ conf_matrix.rf <- confusionMatrix(predict.rf, teste$classes)
 print(conf_matrix.rf)
 cat('\n')
 
-#matriz de confusão para o modelo SVM
+# matriz de confusão para o modelo SVM
 conf_matrix.svm <- confusionMatrix(predict.svm, teste$classes)
 
 print(conf_matrix.svm)
@@ -104,7 +104,7 @@ cat('\n')
 
 #### 1.5 Indique qual modelo dá o melhor o resultado e a métrica utilizada
 
-O melhor modelo foi random forest com acurácia de 0.9218 e kappa de 0.8987. A métrica utilizada foram a acurácia e kappa.
+O melhor modelo foi random forest com acurácia de 0.918 e kappa de 0.8987. A métrica utilizada foram a acurácia e kappa.
 
 #### 2.1 Carregar o arquivo Volumes.csv (<http://www.razer.net.br/datasets/Volumes.csv>)
 
@@ -128,6 +128,10 @@ regression.teste <- dados[-regression.indices, ]
 ```
 
 #### 2.4 Usando o pacote "caret", treinar os modelos: Random Forest (rf), SVM (svmRadial), Redes Neurais (neuralnet) e o modelo alométrico de SPURR
+```{r}
+# Para reproductibilidade
+set.seed(7)
+```
 
 ```{r}
 regression.rf <- caret::train(VOL ~ ., data=regression.treino, method="rf")
@@ -155,6 +159,10 @@ summary(regression.spurr)
 #### 2.5 Efetue as predições nos dados de teste
 
 predições
+```{r}
+# Para reproductibilidade
+set.seed(7)
+```
 
 ```{r}
 predict.regression.rf <- predict(regression.rf, regression.teste)
@@ -279,31 +287,33 @@ Syx(regression.teste$VOL, predict.regression.suprr, n)
 n <- nrow(regression.teste)
 SyxPercent(regression.teste$VOL, predict.regression.suprr, n)
 ```
-
+#####  2.7 escolha o melhor modelo
 ##### Resumo dos resultados
 
 ###### RF:
 
-1.  coeficiente de determinação: 0.8843635
-2.  Erro padrão estimativa: 0.1477194
-3.  Erro padrão estimativa em porcentagem: 10.99484
+1.  coeficiente de determinação: 0.8223603.
+2.  Erro padrão estimativa: 0.1376052.
+3.  Erro padrão estimativa em porcentagem: 10.42195
 
 ###### SVM:
 
-1.  coeficiente de determinação: 0.7076839
-2.  Erro padrão estimativa: 0.2348641
-3.  Erro padrão estimativa em porcentagem: 17.48107
+1.  coeficiente de determinação: 0.6254546
+2.  Erro padrão estimativa: 0.19981
+3.  Erro padrão estimativa em porcentagem: 15.13322
 
 ###### nnet:
 
-1.  coeficiente de determinação: -0.6948902
-2.  Erro padrão estimativa: 0.5655371
-3.  Error padrão estimativa em porcentagem: 42.09325
+1.  coeficiente de determinação: -1.069672
+2.  Erro padrão estimativa: 0.4696948
+3.  Error padrão estimativa em porcentagem: 35.57377
 
 ###### spurr:
 
-1.  coeficiente de determinação: 0.9141323
-2.  Erro padrão estimativa: 0.1272932
-3.  Error padrão estimativa em porcentagem: 9.474507
+1.  coeficiente de determinação: 0.7734018
+2.  Erro padrão estimativa: 0.1554151
+3.  Error padrão estimativa em porcentagem: 11.77084
 
-Com base nas métricas, o modelo que se saiu melhor foi o spurr
+Com base nas métricas, o modelo que se saiu melhor foi o RandomForest, com
+R2 igual 0.8223603, Erro padrão estimativa de 0.1376052 e Erro padrão de estima-
+tiva em porcentagem de 10.42195
