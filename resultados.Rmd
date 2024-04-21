@@ -1,3 +1,12 @@
+#TRABALHO DE IAA003 – Linguagem R
+
+# EQUIPE: 23
+# RODRIGO ROLIM VERAS
+# ALBINO BOGUCHESKI JUNIOR
+#
+#
+#
+#
 ---
 título: "resultados"
 authors: "rodrigo rolim veras"
