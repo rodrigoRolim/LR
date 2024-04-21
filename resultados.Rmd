@@ -104,7 +104,7 @@ cat('\n')
 
 #### 1.5 Indique qual modelo dá o melhor o resultado e a métrica utilizada
 
-O melhor modelo foi random forest com acurácia de 0.918 e kappa de 0.8987. A métrica utilizada foram a acurácia e kappa.
+O melhor modelo foi random forest com acurácia de 0.9182 e kappa de 0.8987. A métrica utilizada foram a acurácia e kappa.
 
 #### 2.1 Carregar o arquivo Volumes.csv (<http://www.razer.net.br/datasets/Volumes.csv>)
 
@@ -147,7 +147,11 @@ regression.rna <- caret::train(
 ##### treino do modelo Spurr
 
 ```{r}
-regression.spurr <- nls(VOL ~ b0 + b1*DAP*DAP*HT, data=regression.treino, start=list(b0=0.5, b1=0.5))
+regression.spurr <- nls(
+  VOL ~ b0 + b1*DAP*DAP*HT, 
+  data=regression.treino, 
+  start=list(b0=0.5, b1=0.5)
+)
 ```
 
 ##### visualizar os resultados de Spurr
