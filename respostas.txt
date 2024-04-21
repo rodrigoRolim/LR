@@ -1,3 +1,14 @@
+#TRABALHO DE IAA003 – Linguagem R
+
+# EQUIPE: 23
+# ALBINO BOGUCHESKI JUNIOR
+# BEATRIZ LEANDRO BONAFINI
+# CICERO SAMUEL RODRIGUES MENDES
+# FERNANDA BATISTA DE OLIVEIRA
+# MARCOS ANTONIO NESPOLO JUNIOR
+# RODRIGO ROLIM VERAS
+
+
 1.5 Indique qual modelo dá o melhor o resultado e a métrica utilizada
   O melhor modelo foi random forest com acurácia de 0.918 e kappa de 0.8987. 
   A métrica utilizada foram a acurácia e kappa.
